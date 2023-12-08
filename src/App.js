@@ -1,10 +1,14 @@
-import { VideoList } from "./components/VideoList.jsx";
+import React from "react";
+import Counter from "./components/Counter";
+import ClassCounter from "./components/ClassCounter";
 
 function App() {
   return (
     <>
-    <h1>Hello, world</h1>
-    <VideoList />
+    <div className="App">
+      <Counter/>
+      <ClassCounter/>
+    </div>
     </>
   );
 }
