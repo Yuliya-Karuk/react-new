@@ -5,6 +5,7 @@ import './styles/App.css';
 import PostList from "./components/PostList";
 import MyButton from "./components/UI/button/MyButton";
 import MyInput from "./components/UI/input/MyInput";
+import PostForm from "./components/PostForm";
 
 function App() {
   const [posts, setPosts] = useState([
@@ -13,42 +14,24 @@ function App() {
     { id: 3, title: 'Javascript 3', body: 'Description 3' },
   ])
 
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
-
-  const addNewPost = (e) => {
-    e.preventDefault();
-    const newPost = {
-      id: Date.now(),
-      title,
-      body
-    }
+  const createPost = (newPost) => {
     setPosts([...posts, newPost]);
-    setTitle('');
-    setBody('');
-   }
+  }
+
+  const removePost = (post) => {
+    setPosts(posts.filter(p => p.id !== post.id));
+  }
 
   return (
     <>
     <div className="App">
       <Counter/>
       <ClassCounter/>
-      <form>
-        <MyInput
-          type="text"
-          placeholder="Post Title"
-          value={title}
-          onChange= {e => setTitle(e.target.value)}
-        />
-        <MyInput
-          type="text"
-          placeholder="Post Description"
-          value={body}
-          onChange= {e => setBody(e.target.value)}
-        />
-        <MyButton onClick={addNewPost}>Create new post</MyButton>
-      </form>
-      <PostList posts={posts} title="Post`s list 1"/>
+      <PostForm create={createPost}/>
+      {posts.length !== 0
+        ?<PostList remove={removePost} posts={posts} title="Post`s list 1"/>
+        :<h1 style={{textAlign: 'center'}}>Posts are not found</h1>
+      }
     </div>
     </>
   );
