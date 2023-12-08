@@ -13,15 +13,20 @@ function App() {
     { id: 3, title: 'Javascript 3', body: 'Description 3' },
   ])
 
-  const [title, setTitle] = useState('')
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
 
   const addNewPost = (e) => {
     e.preventDefault();
-    console.log(title);
-    console.log(bodyInputRef.current.value);
-  }
-
-  const bodyInputRef = useRef();
+    const newPost = {
+      id: Date.now(),
+      title,
+      body
+    }
+    setPosts([...posts, newPost]);
+    setTitle('');
+    setBody('');
+   }
 
   return (
     <>
@@ -29,18 +34,17 @@ function App() {
       <Counter/>
       <ClassCounter/>
       <form>
-        {/* Управляемый компонет*/}
         <MyInput
           type="text"
           placeholder="Post Title"
           value={title}
           onChange= {e => setTitle(e.target.value)}
         />
-        {/* Неуправляемый компонет*/}
         <MyInput
           type="text"
           placeholder="Post Description"
-          ref = {bodyInputRef}
+          value={body}
+          onChange= {e => setBody(e.target.value)}
         />
         <MyButton onClick={addNewPost}>Create new post</MyButton>
       </form>
