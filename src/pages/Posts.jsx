@@ -14,13 +14,14 @@ import { useFetching } from "../hooks/useFetching";
 import { getPageCount } from "../utils/pages";
 import Pagination from "../components/UI/pagination/Pagination";
 import { useObserver } from "../hooks/useObserver";
+import MySelect from "../components/UI/select/MySelect";
 
 function Posts() {
   const [posts, setPosts] = useState([])
   const [filter, setFilter] = useState({sort: '', query: ''});
   const [modal, setModal] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
-  const [limit, setlimit] = useState(10);
+  const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query);
   const lastElement = useRef();
@@ -38,7 +39,7 @@ function Posts() {
 
   useEffect(() => {
     fetchPosts(limit, page);
-  }, [page])
+  }, [page, limit])
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
@@ -64,6 +65,17 @@ function Posts() {
       <PostFilter
         filter={filter}
         setFilter={setFilter}
+      />
+      <MySelect
+        value={limit}
+        onChange={value => setLimit(value)}
+        defaultValue="Posts quantity on page"
+        options={[
+          {value: 5, name: '5'},
+          {value: 10, name: '10'},
+          {value: 20, name: '20'},
+          {value: -1, name: 'All'}
+        ]}
       />
       {postError && <h1>There is an error {postError}</h1>}
       <PostList remove={removePost} posts={sortedAndSearchedPosts} title="Post`s list 1"/>
