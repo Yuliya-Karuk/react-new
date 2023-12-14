@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Counter from "../components/Counter";
 import ClassCounter from "../components/ClassCounter";
 import '../styles/App.css';
@@ -13,6 +13,7 @@ import Loader from "../components/UI/Loader/Loader";
 import { useFetching } from "../hooks/useFetching";
 import { getPageCount } from "../utils/pages";
 import Pagination from "../components/UI/pagination/Pagination";
+import { useObserver } from "../hooks/useObserver";
 
 function Posts() {
   const [posts, setPosts] = useState([])
@@ -22,17 +23,22 @@ function Posts() {
   const [limit, setlimit] = useState(10);
   const [page, setPage] = useState(1);
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query);
+  const lastElement = useRef();
 
   const [fetchPosts, isPostsLoading, postError] = useFetching(async (limit, page) => {
     const response = await PostService.getAll(limit, page);
-    setPosts(response.data);
+    setPosts([...posts, ...response.data]);
     const totalCount = response.headers['x-total-count'];
     setTotalPages(getPageCount(totalCount, limit));
   })
 
+  useObserver(lastElement, page < totalPages, isPostsLoading, () => {
+    setPage(page + 1);
+  })
+
   useEffect(() => {
     fetchPosts(limit, page);
-  }, [])
+  }, [page])
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
@@ -41,11 +47,6 @@ function Posts() {
 
   const removePost = (post) => {
     setPosts(posts.filter(p => p.id !== post.id));
-  }
-
-  const changePage = (p) => {
-    setPage(p);
-    fetchPosts(limit, p);
   }
 
   return (
@@ -65,11 +66,12 @@ function Posts() {
         setFilter={setFilter}
       />
       {postError && <h1>There is an error {postError}</h1>}
-      {isPostsLoading
-        ? <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
-        : <PostList remove={removePost} posts={sortedAndSearchedPosts} title="Post`s list 1"/>
+      <PostList remove={removePost} posts={sortedAndSearchedPosts} title="Post`s list 1"/>
+      <div ref={lastElement} style={{height: 20, background: 'teal'}}></div>
+      {isPostsLoading &&
+        <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
       }
-      <Pagination page={page} changePage={changePage} totalPages={totalPages}/>
+      <Pagination page={page} changePage={() => setPage(page)} totalPages={totalPages}/>
     </div>
     </>
   );

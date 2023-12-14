@@ -25,7 +25,7 @@ const AppRouter = () => {
         <Route exact={route.exact} path={route.path} element={route.component} key={route.path} />
         )}
         <Route path="/*" element={<Navigate to="/login" replace />} />
-        </Routes>
+      </Routes>
     }
     </>
   );
